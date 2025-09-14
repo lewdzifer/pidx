@@ -59,6 +59,11 @@ func (s *Service) Health() service.Health {
 }
 
 func (s *Service) Initialize(ctx *service.Context) error {
+	apiServer, err := api.NewHandlerFromEnv(ctx)
+	if err != nil {
+		return fail.WrapC(ctx, err, "failed to create API handler")
+	}
+
 	validateInterceptor, err := validate.NewInterceptor()
 	if err != nil {
 		return fail.WrapC(ctx, err, "failed to create validation interceptor")
@@ -81,7 +86,7 @@ func (s *Service) Initialize(ctx *service.Context) error {
 	mux.Handle(grpcreflect.NewHandlerV1(reflector))
 	mux.Handle(grpcreflect.NewHandlerV1Alpha(reflector))
 	mux.Handle(grpchealth.NewHandler(s))
-	mux.Handle(tagv1connect.NewTagServiceHandler(&api.Server{},
+	mux.Handle(tagv1connect.NewTagServiceHandler(apiServer,
 		connect.WithInterceptors(
 			otelInterceptor,
 			validateInterceptor,
