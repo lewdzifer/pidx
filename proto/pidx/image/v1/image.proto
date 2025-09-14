@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package pidx.image.v1;
+
+// Image represents a digital image with metadata including title and description.
+message Image {
+  // The unique identifier of the image.
+  string id = 1;
+  // The title of the image.
+  optional string title = 2;
+  // The description of the image.
+  optional string description = 3;
+}

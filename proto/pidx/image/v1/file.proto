@@ -1,0 +1,22 @@
+syntax = "proto3";
+package pidx.image.v1;
+
+import "pidx/image/v1/hashes.proto";
+
+// File represents a specific file version of an image, containing metadata about the file's dimensions and content hashes.
+message File {
+  // The unique identifier of the file.
+  string id = 1;
+  // The unique identifier of the image this file belongs to.
+  string image_id = 2;
+  // The unique identifier of the blob containing the file's binary data.
+  string blob_id = 3;
+  // The width of the image in pixels.
+  uint64 width = 4;
+  // The height of the image in pixels.
+  uint64 height = 5;
+  // The format of the image.
+  string format = 6;
+  // The content hashes for this file.
+  pidx.image.v1.Hashes hashes = 7;
+}

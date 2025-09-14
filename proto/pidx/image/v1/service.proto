@@ -1,0 +1,102 @@
+syntax = "proto3";
+
+package pidx.image.v1;
+
+import "pidx/blob/v1/source.proto";
+import "pidx/image/v1/file.proto";
+import "pidx/image/v1/image.proto";
+
+// ImageService provides operations for managing images and their associated files.
+service ImageService {
+  // GetImage retrieves metadata for an image by its unique identifier.
+  rpc GetImage(GetImageRequest) returns (GetImageResponse);
+  // DownloadImage streams the binary content of an image in chunks.
+  // The metadata of the image is included in the first chunk.
+  rpc DownloadImage(DownloadImageRequest) returns (stream DownloadImageResponse);
+  // DownloadImageFile streams the binary content of a specific image file in chunks.
+  // The metadata of the image file is included in the first chunk.
+  rpc DownloadImageFile(DownloadImageFileRequest) returns (stream DownloadImageFileResponse);
+  // UploadImageFile uploads an image file by streaming its binary content in chunks.
+  rpc UploadImageFile(stream UploadImageFileRequest) returns (UploadImageFileResponse);
+  // DeleteImage deletes an image and all associated files.
+  rpc DeleteImage(DeleteImageRequest) returns (DeleteImageResponse);
+  // DeleteImageFile deletes a specific image file.
+  rpc DeleteImageFile(DeleteImageFileRequest) returns (DeleteImageFileResponse);
+}
+
+// GetImageRequest is the request message for retrieving an image's metadata.
+message GetImageRequest {
+  // The unique identifier of the image to retrieve.
+  string id = 1;
+}
+
+// GetImageResponse is the response message containing the image's metadata.
+message GetImageResponse {
+  // The metadata of the requested image.
+  pidx.image.v1.Image image = 1;
+}
+
+// DownloadImageRequest is the request message for downloading an image's content.
+message DownloadImageRequest {
+  // The unique identifier of the image to download.
+  string id = 1;
+}
+
+// DownloadImageResponse is the streamed response message containing a chunk of the image's data.
+// The first chunk may include file metadata.
+message DownloadImageResponse {
+  // A chunk of the image's binary data.
+  bytes chunk = 1;
+  // The metadata of the image file. Only present in the first chunk.
+  optional pidx.image.v1.File file = 2;
+}
+
+// DownloadImageFileRequest is the request message for downloading a specific image file's content.
+message DownloadImageFileRequest {
+  // The unique identifier of the image file to download.
+  string id = 1;
+}
+
+// DownloadImageFileResponse is the streamed response message containing a chunk of the image file's data.
+message DownloadImageFileResponse {
+  // A chunk of the image file's binary data.
+  bytes chunk = 1;
+}
+
+// UploadImageFileRequest is the streamed request message for uploading an image file's content.
+message UploadImageFileRequest {
+  // A chunk of the image file's binary data to upload.
+  bytes chunk = 1;
+  // The source of the image file. Must be provided in the first chunk.
+  optional pidx.blob.v1.Source source = 2;
+}
+
+// UploadImageFileResponse is the response message containing the metadata of the uploaded image file.
+message UploadImageFileResponse {
+  // The metadata of the uploaded image file.
+  pidx.image.v1.File file = 1;
+}
+
+// DeleteImageRequest is the request message for deleting an image and all associated files.
+message DeleteImageRequest {
+  // The unique identifier of the image to delete.
+  string id = 1;
+}
+
+// DeleteImageResponse is the response message containing the metadata of the deleted image.
+message DeleteImageResponse {
+  // The metadata of the deleted image.
+  pidx.image.v1.Image image = 1;
+}
+
+// DeleteImageFileRequest is the request message for deleting a specific image file.
+message DeleteImageFileRequest {
+  // The unique identifier of the image file to delete.
+  string id = 1;
+}
+
+// DeleteImageFileResponse is the response message containing the metadata of the deleted image file.
+message DeleteImageFileResponse {
+  // The metadata of the deleted image file.
+  pidx.image.v1.File file = 1;
+}

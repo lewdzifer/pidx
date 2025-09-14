@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package pidx.attribute.v1;
+
+import "pidx/attribute/v1/type.proto";
+import "pidx/attribute/v1/constraint.proto";
+
+// Value represents a typed value assigned to an attribute key.
+// It supports string, integer, and float types, each with optional constraints.
+message Value {
+  pidx.attribute.v1.Type type = 1;
+  // The type of value being represented.
+  oneof kind {
+    // String value with optional constraints.
+    StringValue string = 10;
+    // Integer value with optional constraints.
+    IntegerValue integer = 11;
+    // Float value with optional constraints.
+    FloatValue float = 12;
+  }
+}
+
+// StringValue represents a string value and its associated constraints.
+message StringValue {
+  // The string value.
+  string value = 1;
+  // Constraints applied to the string value (e.g., min/max length, regex).
+  repeated pidx.attribute.v1.StringConstraint constraints = 2;
+}
+
+// IntegerValue represents an integer value and its associated constraints.
+message IntegerValue {
+  // The integer value.
+  int64 value = 1;
+  // Constraints applied to the integer value (e.g., min/max value).
+  repeated pidx.attribute.v1.IntegerConstraint constraints = 2;
+}
+
+// FloatValue represents a floating-point value and its associated constraints.
+message FloatValue {
+  // The float value.
+  float value = 1;
+  // Constraints applied to the float value (e.g., min/max value).
+  repeated pidx.attribute.v1.FloatConstraint constraints = 2;
+}
+

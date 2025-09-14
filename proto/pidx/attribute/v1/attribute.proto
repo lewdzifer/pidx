@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package pidx.attribute.v1;
+
+import "buf/validate/validate.proto";
+import "google/api/field_behavior.proto";
+import "pidx/attribute/v1/value.proto";
+
+// Attribute represents a key-value pair assigned to an entity.
+// Each Attribute consists of a unique identifier, a display name, and an optional description.
+// Attributes enable flexible and extensible metadata assignment to resources.
+message Attribute {
+  // The unique identifier for the attribute.
+  // This must be non-empty and is typically assigned by the server.
+  string id = 1 [
+    (buf.validate.field).string.min_len = 1,
+    (google.api.field_behavior) = OUTPUT_ONLY
+  ];
+  // The display name of the attribute.
+  // This should be descriptive and unique within its context.
+  // Must be non-empty.
+  string name = 2 [(buf.validate.field).string.min_len = 1];
+  // An optional description providing additional details about the attribute.
+  // This can clarify the attribute's purpose or intended usage.
+  optional string description = 3 [(buf.validate.field).string.min_len = 1];
+}
+
+// AttributeAssignment represents a specific assignment of an attribute key-value pair to an entity.
+// This message captures the relationship between an attribute definition and its concrete value
+// when applied to a specific resource within the system.
+message AttributeAssignment {
+  // The unique identifier for this attribute assignment.
+  // This is assigned by the server and is immutable.
+  string id = 1 [
+    (buf.validate.field).string.min_len = 1,
+    (google.api.field_behavior) = OUTPUT_ONLY
+  ];
+  // The unique identifier for the attribute being assigned.
+  string attribute_id = 2 [
+    (buf.validate.field).string.min_len = 1,
+    (google.api.field_behavior) = OUTPUT_ONLY
+  ];
+  // The type of entity this attribute is being assigned to (e.g., "image", "blob", "user").
+  string entity_type = 3 [
+    (buf.validate.field).string.min_len = 1,
+    (google.api.field_behavior) = OUTPUT_ONLY
+  ];
+  // The unique identifier of the specific entity instance being assigned the attribute.
+  // May only be unique within the domain of entity_type.
+  string entity_id = 4 [
+    (buf.validate.field).string.min_len = 1,
+    (google.api.field_behavior) = OUTPUT_ONLY
+  ];
+  // The value assigned to the key for this attribute assignment.
+  // The value must conform to the type and constraints specified by the key definition.
+  pidx.attribute.v1.Value value = 5;
+}

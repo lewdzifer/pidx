@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package pidx.attribute.v1;
+
+import "pidx/attribute/v1/constraint.proto";
+
+message Type {
+  string name = 1;
+  optional string description = 2;
+
+  oneof type {
+    StringType string = 10;
+    IntegerType integer = 11;
+  }
+}
+
+message StringType {
+  repeated pidx.attribute.v1.StringConstraint constraints = 1;
+}
+
+message IntegerType {
+  repeated pidx.attribute.v1.IntegerType constraints = 2;
+}

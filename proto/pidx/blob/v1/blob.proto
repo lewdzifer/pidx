@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package pidx.blob.v1;
+
+import "buf/validate/validate.proto";
+import "pidx/blob/v1/hashes.proto";
+
+// Blob represents information about a blob, i.e. a binary object of any kind.
+// It contains metadata such as a unique identifier, size, media type, and cryptographic hashes.
+// Blobs are used to store and reference binary data, such as files, images, or other media.
+message Blob {
+  // The unique identifier for the blob.
+  // This must be a non-empty string and is typically assigned by the server.
+  string id = 1 [(buf.validate.field).string.min_len = 1];
+  // The size of the blob in bytes.
+  // This value represents the total number of bytes in the blob's content.
+  uint64 size_bytes = 2;
+  // The media (MIME) type of the blob.
+  // This describes the format of the blob's content (e.g., "image/png", "application/pdf").
+  string media_type = 3;
+  // The cryptographic hashes of the blob.
+  // These hashes can be used for integrity verification, deduplication, and fast identification.
+  pidx.blob.v1.Hashes hashes = 4;
+}

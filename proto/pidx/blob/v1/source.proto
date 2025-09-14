@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package pidx.blob.v1;
+
+import "buf/validate/validate.proto";
+
+// Source represents the origin or provenance of a blob.
+// It describes where the blob's data was originally obtained from.
+// This message is used to track the source of a blob for purposes such as auditing, deduplication, or attribution.
+message Source {
+  // The unique identifier for the source.
+  // This must be a non-empty string and is typically assigned by the server.
+  string id = 1 [(buf.validate.field).string.min_len = 1];
+  // The type of source for the blob.
+  oneof type {
+    // The blob was sourced from a URI (Uniform Resource Identifier), such as HTTP, FTP, S3, etc.
+    // This is used when the blob was downloaded or retrieved from a network location.
+    UriSource uri = 2;
+    // The blob was sourced from a local file on a specific host or machine.
+    // This is used when the blob originated from a file system, either local or remote.
+    LocalFileSource local_file = 3;
+    // The blob was sourced from a file contained within a torrent.
+    // This is used when the blob was extracted from a BitTorrent resource.
+    TorrentSource torrent = 4;
+  }
+}
+
+// UriSource describes a blob that originated from a URI.
+message UriSource {
+  // The URI from which the blob was obtained (e.g., "https://example.com/file.jpg").
+  // This should be a valid URI pointing to the original location of the blob.
+  string uri = 1 [(buf.validate.field).string.uri = true];
+}
+
+// LocalFileSource describes a blob that originated from a file on a local or remote host.
+message LocalFileSource {
+  // The hostname or network identifier of the machine where the file was located.
+  // This can be a DNS name, IP address, or other unique identifier for the host.
+  string hostname = 1 [(buf.validate.field).string.hostname = true];
+  // The absolute or relative path to the file on the specified host.
+  // This should specify the location of the file within the host's file system.
+  string path = 2 [(buf.validate.field).string.min_len = 1];
+}
+
+// TorrentSource describes a blob that originated from a torrent.
+// This includes the torrent's info hash and the specific file name within the torrent.
+message TorrentSource {
+  // The info hash of the torrent, which uniquely identifies the torrent.
+  // For BitTorrent v1, this is a 20-byte SHA-1 hash.
+  // For BitTorrent v2, this is a 32-byte SHA-256 hash (up to 64 bytes for hybrid torrents).
+  bytes torrent_hash = 1 [(buf.validate.field).bytes = {
+    min_len: 20 // v1
+    max_len: 64 // v2 or hybrid
+  }];
+  // The file name within the torrent that was used to create the blob.
+  // This should match the name of the file as listed in the torrent's file list.
+  string file_name = 2 [(buf.validate.field).string.min_len = 1];
+}

@@ -1,0 +1,127 @@
+syntax = "proto3";
+
+package pidx.attribute.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/field_mask.proto";
+import "pidx/attribute/v1/attribute.proto";
+
+/// AttributeService offers a unified interface for managing both attribute definitions and their assignments to entities.
+/// Clients can create, retrieve, update, and delete attribute definitions, as well as assign or remove attributes from specific entities.
+/// Centralizing assignment management within this service ensures that when an attribute is deleted, all related assignments are automatically and consistently cleaned up.
+/// If assignments were managed within individual entity services, additional coordination would be required to maintain referential integrity upon attribute deletion.
+service AttributeService {
+  // CreateAttribute creates a new attribute definition.
+  // The provided attribute must not have an id set; the server will assign one.
+  rpc CreateAttribute(CreateAttributeRequest) returns (CreateAttributeResponse);
+
+  // GetAttribute retrieves an attribute definition by its unique id.
+  // Returns NOT_FOUND if the attribute does not exist.
+  rpc GetAttribute(GetAttributeRequest) returns (GetAttributeResponse);
+
+  // UpdateAttribute updates an existing attribute definition.
+  // Only the fields specified in the update_mask will be updated.
+  rpc UpdateAttribute(UpdateAttributeRequest) returns (UpdateAttributeResponse);
+
+  // DeleteAttribute deletes an attribute definition by its unique id.
+  // Returns the deleted attribute in the response.
+  rpc DeleteAttribute(DeleteAttributeRequest) returns (DeleteAttributeResponse);
+
+  // GetAttributeAssignments retrieves all assignments for a given attribute id.
+  // Returns a list of all entities to which the attribute is assigned.
+  rpc GetAttributeAssignments(GetAttributeAssignmentsRequest) returns (GetAttributeAssignmentsResponse);
+
+  // CreateAttributeAssignment creates a new assignment of an attribute to an entity.
+  // If the given entity already has an assignment for the attribute, it will be replaced.
+  rpc CreateAttributeAssignment(CreateAttributeAssignmentRequest) returns (CreateAttributeAssignmentResponse);
+
+  // DeleteAttributeAssignment deletes an attribute assignment by its unique id.
+  // Returns the deleted assignment in the response.
+  rpc DeleteAttributeAssignment(DeleteAttributeAssignmentRequest) returns (DeleteAttributeAssignmentResponse);
+}
+
+/// Request message for creating a new attribute definition.
+message CreateAttributeRequest {
+  /// The attribute definition to create. The id field must be unset.
+  pidx.attribute.v1.Attribute attribute = 1;
+}
+
+/// Response message for CreateAttribute.
+message CreateAttributeResponse {
+  /// The created attribute definition, including its assigned id.
+  pidx.attribute.v1.Attribute attribute = 1;
+}
+
+/// Request message for retrieving an attribute definition by id.
+message GetAttributeRequest {
+  /// The unique id of the attribute to retrieve.
+  string id = 1 [(buf.validate.field).string.min_len = 1];
+}
+
+/// Response message for GetAttribute.
+message GetAttributeResponse {
+  /// The requested attribute definition.
+  pidx.attribute.v1.Attribute attribute = 1;
+}
+
+/// Request message for updating an attribute definition.
+message UpdateAttributeRequest {
+  /// The attribute definition with updated fields. The id must be set.
+  pidx.attribute.v1.Attribute attribute = 1;
+  /// The fields to update. If not set, all updatable fields will be updated.
+  optional google.protobuf.FieldMask update_mask = 2;
+}
+
+/// Response message for UpdateAttribute.
+message UpdateAttributeResponse {
+  /// The updated attribute definition.
+  pidx.attribute.v1.Attribute attribute = 1;
+}
+
+/// Request message for deleting an attribute definition.
+message DeleteAttributeRequest {
+  /// The unique id of the attribute to delete.
+  string id = 1 [(buf.validate.field).string.min_len = 1];
+}
+
+/// Response message for DeleteAttribute.
+message DeleteAttributeResponse {
+  /// The deleted attribute definition.
+  pidx.attribute.v1.Attribute attribute = 1;
+}
+
+/// Request message for retrieving all assignments for a given attribute.
+message GetAttributeAssignmentsRequest {
+  /// The unique id of the attribute whose assignments are to be listed.
+  string attribute_id = 1 [(buf.validate.field).string.min_len = 1];
+}
+
+/// Response message for GetAttributeAssignments.
+message GetAttributeAssignmentsResponse {
+  /// The list of assignments for the specified attribute.
+  repeated pidx.attribute.v1.AttributeAssignment assignments = 1;
+}
+
+/// Request message for creating a new attribute assignment.
+message CreateAttributeAssignmentRequest {
+  /// The assignment to create. The id field must be unset.
+  pidx.attribute.v1.AttributeAssignment assignment = 1;
+}
+
+/// Response message for CreateAttributeAssignment.
+message CreateAttributeAssignmentResponse {
+  /// The created attribute assignment, including its assigned id.
+  pidx.attribute.v1.AttributeAssignment assignment = 1;
+}
+
+/// Request message for deleting an attribute assignment.
+message DeleteAttributeAssignmentRequest {
+  /// The unique id of the attribute assignment to delete.
+  string id = 1 [(buf.validate.field).string.min_len = 1];
+}
+
+/// Response message for DeleteAttributeAssignment.
+message DeleteAttributeAssignmentResponse {
+  /// The deleted attribute assignment.
+  pidx.attribute.v1.AttributeAssignment assignment = 1;
+}

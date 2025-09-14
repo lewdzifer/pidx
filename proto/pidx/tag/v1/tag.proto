@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package pidx.tag.v1;
+
+import "buf/validate/validate.proto";
+import "google/api/field_behavior.proto";
+
+// Tag represents a label or category that can be assigned to entities.
+// Tags help organize, group, or describe resources within the system.
+message Tag {
+  // The unique identifier for the tag.
+  // This is assigned by the server and is immutable.
+  string id = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The display name of the tag.
+  // This should be unique and descriptive.
+  string name = 2 [(buf.validate.field).string = {min_len: 2}];
+  // An optional description providing more details about the tag.
+  optional string description = 3 [(buf.validate.field).string = {min_len: 1}];
+}
+
+// TagAssignment represents the association between a tag and an entity within the system.
+// This message captures the relationship, including metadata about the assignment such as
+// confidence score and entity identification.
+message TagAssignment {
+  // The unique identifier for the tag assignment.
+  // This is assigned by the server and is immutable.
+  string id = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The unique identifier for the tag being assigned.
+  // Must reference an existing tag in the system.
+  string tag_id = 2 [(buf.validate.field).string.min_len = 1];
+  // The type of entity this tag is being assigned to (e.g., "image", "blob", "user").
+  // This helps categorize what kind of resource is being tagged.
+  string entity_type = 3 [(buf.validate.field).string.min_len = 1];
+  // The unique identifier of the specific entity instance being tagged.
+  // Must reference an existing entity of the specified entity_type.
+  string entity_id = 4 [(buf.validate.field).string.min_len = 1];
+  // The confidence score for this tag assignment, ranging from 0.0 to 1.0.
+  // A score of 1.0 indicates full confidence, while 0.0 indicates no confidence.
+  // This is useful for automated tagging systems or when multiple tags might apply.
+  float score = 5 [(buf.validate.field).float = {
+    gte: 0.0
+    lte: 1.0
+  }];
+}

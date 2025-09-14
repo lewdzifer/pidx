@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package pidx.attribute.v1;
+
+
+// StringConstraint defines a constraint for a string value.
+message StringConstraint {
+  // The type of string constraint.
+  oneof constraint {
+    // Minimum length of the string.
+    uint32 min_length = 1;
+    // Maximum length of the string.
+    uint32 max_length = 2;
+    // Regular expression pattern the string must match.
+    string regex_pattern = 3;
+  }
+}
+
+// IntegerConstraint defines a constraint for an integer value.
+message IntegerConstraint {
+  // The type of integer constraint.
+  oneof constraint {
+    // Minimum value allowed.
+    int64 min_value = 1;
+    // Maximum value allowed.
+    int64 max_value = 2;
+  }
+}
+
+// FloatConstraint defines a constraint for a float value.
+message FloatConstraint {
+  // The type of float constraint.
+  oneof constraint {
+    // Minimum value allowed.
+    float min_value = 1;
+    // Maximum value allowed.
+    float max_value = 2;
+  }
+}

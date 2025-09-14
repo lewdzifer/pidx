@@ -1,0 +1,126 @@
+syntax = "proto3";
+
+package pidx.tag.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/field_mask.proto";
+import "pidx/tag/v1/tag.proto";
+
+/// TagService provides Create, Read, Update, and Delete (CRUD) operations for Tag resources,
+/// as well as management of tag assignments to entities. Tags are used to categorize or label entities
+/// within the system, enabling flexible organization and search.
+service TagService {
+  /// Creates a new tag resource.
+  /// The provided tag must not have an id set; the server will assign one.
+  rpc CreateTag(CreateTagRequest) returns (CreateTagResponse);
+  /// Retrieves a tag resource by its unique id.
+  /// Returns the tag if found, or a NOT_FOUND error if the tag does not exist.
+  rpc GetTag(GetTagRequest) returns (GetTagResponse);
+  /// Updates an existing tag resource.
+  /// Only the fields specified in the update_mask will be updated; other fields will remain unchanged.
+  /// Returns the updated tag.
+  rpc UpdateTag(UpdateTagRequest) returns (UpdateTagResponse);
+  /// Retrieves all tag assignments for a given tag or entity.
+  rpc GetTagAssignments(GetTagAssignmentsRequest) returns (GetTagAssignmentsResponse);
+  /// Creates one or more tag assignments, associating tags with entities.
+  rpc CreateTagAssignment(CreateTagAssignmentRequest) returns (CreateTagAssignmentResponse);
+  /// Deletes a tag assignment by its unique id.
+  rpc DeleteTagAssignment(DeleteTagAssignmentRequest) returns (DeleteTagAssignmentResponse);
+}
+
+/// Request message for creating a tag.
+message CreateTagRequest {
+  /// The tag to create. The id field must be unset.
+  pidx.tag.v1.Tag tag = 1;
+}
+
+/// Response message for CreateTag.
+message CreateTagResponse {
+  /// The newly created tag, including the server-assigned id.
+  pidx.tag.v1.Tag tag = 1;
+}
+
+/// Request message for retrieving a tag.
+message GetTagRequest {
+  /// The unique id of the tag to retrieve.
+  /// This field must be non-empty.
+  string id = 1 [(buf.validate.field).string.min_len = 1];
+}
+
+/// Response message for GetTag.
+message GetTagResponse {
+  /// The tag corresponding to the requested id.
+  /// If the tag does not exist, the response will be empty and an error will be returned.
+  pidx.tag.v1.Tag tag = 1;
+}
+
+/// Request message for updating a tag.
+message UpdateTagRequest {
+  /// The tag to update.
+  /// The tag's id field must be set and correspond to an existing tag.
+  pidx.tag.v1.Tag tag = 1;
+
+  /// The list of fields to update, as a FieldMask.
+  /// If not set, all updatable fields will be overwritten.
+  /// Fields not included in the mask will remain unchanged.
+  optional google.protobuf.FieldMask update_mask = 2;
+}
+
+/// Response message for UpdateTag.
+message UpdateTagResponse {
+  /// The updated tag after applying the changes.
+  pidx.tag.v1.Tag tag = 1;
+}
+
+/// Request message for deleting a tag.
+message DeleteTagRequest {
+  /// The unique id of the tag to delete.
+  /// This field must be non-empty.
+  string id = 1 [(buf.validate.field).string.min_len = 1];
+}
+
+/// Response message for DeleteTag.
+message DeleteTagResponse {
+  /// The tag that was deleted.
+  /// If the tag did not exist, this field will be empty and an error will be returned.
+  pidx.tag.v1.Tag tag = 1;
+}
+
+/// Request message for retrieving tag assignments.
+/// This can be used to list all assignments for a given tag or entity.
+message GetTagAssignmentsRequest {
+  /// The unique id of the tag or entity whose assignments are to be listed.
+  /// This field must be non-empty.
+  string id = 1 [(buf.validate.field).string.min_len = 1];
+}
+
+/// Response message for GetTagAssignments.
+message GetTagAssignmentsResponse {
+  /// The list of tag assignments matching the request.
+  repeated pidx.tag.v1.TagAssignment assignments = 1;
+}
+
+/// Request message for creating one or more tag assignments.
+message CreateTagAssignmentRequest {
+  /// The list of tag assignments to create. Each assignment must not have an id set.
+  repeated pidx.tag.v1.TagAssignment assignments = 1;
+}
+
+/// Response message for CreateTagAssignment.
+/// Returns the created tag assignment. If multiple assignments were created, only the first is returned.
+message CreateTagAssignmentResponse {
+  /// The created tag assignment, including its assigned id.
+  pidx.tag.v1.TagAssignment assignment = 1;
+}
+
+/// Request message for deleting a tag assignment.
+message DeleteTagAssignmentRequest {
+  /// The unique id of the tag assignment to delete.
+  string id = 1 [(buf.validate.field).string.min_len = 1];
+}
+
+/// Response message for DeleteTagAssignment.
+message DeleteTagAssignmentResponse {
+  /// The id of the tag assignment that was deleted.
+  string id = 1 [(buf.validate.field).string.min_len = 1];
+}

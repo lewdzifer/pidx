@@ -1,0 +1,23 @@
+version: v2
+clean: true
+managed:
+  enabled: true
+  disable:
+    - module: buf.build/googleapis/googleapis
+    - module: buf.build/bufbuild/protovalidate
+  override:
+    - file_option: go_package_prefix
+      value: github.com/lewdzifer/pidx/proto/generated/go
+plugins:
+  - remote: buf.build/protocolbuffers/go:v1.36.6
+    out: proto/generated/go
+    opt:
+      - paths=source_relative
+  - remote: buf.build/connectrpc/go:v1.18.1
+    out: proto/generated/go
+    opt:
+      - paths=source_relative
+  - remote: buf.build/bufbuild/es:v2.2.5
+    out: proto/generated/es
+  - remote: buf.build/connectrpc/query-es:v2.0.1
+    out: proto/generated/es

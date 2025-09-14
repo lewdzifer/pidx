@@ -1,0 +1,111 @@
+syntax = "proto3";
+package pidx.blob.v1;
+
+import "pidx/blob/v1/blob.proto";
+import "pidx/blob/v1/source.proto";
+
+// BlobService is a service for managing blobs, including retrieval, upload, download, deletion, and source management.
+service BlobService {
+  // GetBlob retrieves metadata for a blob by its unique identifier.
+  rpc GetBlob(GetBlobRequest) returns (GetBlobResponse);
+  // DownloadBlob streams the binary content of a blob in chunks.
+  rpc DownloadBlob(DownloadBlobRequest) returns (stream DownloadBlobResponse);
+  // UploadBlob uploads a blob by streaming its binary content in chunks.
+  rpc UploadBlob(stream UploadBlobRequest) returns (UploadBlobResponse);
+  // DeleteBlobData deletes the binary data of a blob. This does not delete the blob's metadata.
+  rpc DeleteBlobData(DeleteBlobDataRequest) returns (DeleteBlobDataResponse);
+  // DeleteBlob deletes the binary data and metadata of a blob.
+  rpc DeleteBlob(DeleteBlobRequest) returns (DeleteBlobResponse);
+  // AddSource associates a new source with an existing blob.
+  rpc AddSource(AddSourceRequest) returns (AddSourceResponse);
+  // RemoveSource disassociates a source from a blob.
+  rpc RemoveSource(RemoveSourceRequest) returns (RemoveSourceResponse);
+}
+
+// GetBlobRequest is the request message for retrieving a blob's metadata.
+message GetBlobRequest {
+  // The unique identifier of the blob to retrieve.
+  string id = 1;
+}
+
+// GetBlobResponse is the response message containing the blob's metadata.
+message GetBlobResponse {
+  // The metadata of the requested blob.
+  pidx.blob.v1.Blob blob = 1;
+}
+
+// DownloadBlobRequest is the request message for downloading a blob's content.
+message DownloadBlobRequest {
+  // The unique identifier of the blob to download.
+  string id = 1;
+}
+
+// DownloadBlobResponse is the streamed response message containing a chunk of the blob's data.
+message DownloadBlobResponse {
+  // A chunk of the blob's binary data.
+  bytes chunk = 1;
+}
+
+// UploadBlobRequest is the streamed request message for uploading a blob's content.
+message UploadBlobRequest {
+  // A chunk of the blob's binary data to upload.
+  bytes chunk = 1;
+  // The source of the blob. Must be provided in the first chunk.
+  optional pidx.blob.v1.Source source = 2;
+}
+
+// UploadBlobResponse is the response message containing the metadata of the uploaded blob.
+message UploadBlobResponse {
+  // The metadata of the uploaded blob.
+  pidx.blob.v1.Blob blob = 1;
+}
+
+// DeleteBlobDataRequest is the request message for deleting the binary data of a blob.
+message DeleteBlobDataRequest {
+  // The unique identifier of the blob to delete the binary data of.
+  string id = 1;
+}
+
+// DeleteBlobDataResponse is the response message containing the metadata of the deleted blob.
+message DeleteBlobDataResponse {
+  // The metadata of the deleted blob.
+  pidx.blob.v1.Blob blob = 1;
+}
+
+// DeleteBlobRequest is the request message for deleting a blob.
+message DeleteBlobRequest {
+  // The unique identifier of the blob to delete.
+  string id = 1;
+}
+
+// DeleteBlobResponse is the response message containing the metadata of the deleted blob.
+message DeleteBlobResponse {
+  // The metadata of the deleted blob.
+  pidx.blob.v1.Blob blob = 1;
+}
+
+// AddSourceRequest is the request message for associating a source with a blob.
+message AddSourceRequest {
+  // The unique identifier of the blob to associate the source with.
+  string id = 1;
+  // The source information to add to the blob.
+  pidx.blob.v1.Source source = 2;
+}
+
+// AddSourceResponse is the response message containing the updated blob metadata.
+message AddSourceResponse {
+  // The metadata of the blob after adding the source.
+  pidx.blob.v1.Blob blob = 1;
+}
+
+// RemoveSourceRequest is the request message for disassociating a source from a blob.
+message RemoveSourceRequest {
+  // The unique identifier of the blob to remove the source from.
+  string id = 1;
+}
+
+// RemoveSourceResponse is the response message containing the updated blob metadata.
+message RemoveSourceResponse {
+  // The metadata of the blob after removing the source.
+  pidx.blob.v1.Blob blob = 1;
+}

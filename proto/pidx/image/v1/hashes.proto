@@ -1,0 +1,5 @@
+syntax = "proto3";
+
+package pidx.image.v1;
+
+message Hashes {}

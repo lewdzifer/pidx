@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package pidx.blob.v1;
+
+// Hashes represents the cryptographic hashes of a blob.
+// It includes full-blob and prefix (first 4k) hashes for multiple algorithms.
+// These hashes can be used for integrity verification, deduplication, and fast identification.
+message Hashes {
+  // The SHA-256 hash of the entire blob.
+  bytes sha256 = 1;
+  // The SHA-256 hash of the first 4 kilobytes of the blob.
+  bytes prefix4k_sha256 = 2;
+  // The XXH64 hash of the entire blob.
+  bytes xxh64 = 3;
+  // The XXH64 hash of the first 4 kilobytes of the blob.
+  bytes prefix4k_xxh64 = 4;
+  // The BLAKE3 hash of the entire blob.
+  bytes blake3 = 5;
+  // The BLAKE3 hash of the first 4 kilobytes of the blob.
+  bytes prefix4k_blake3 = 6;
+}
